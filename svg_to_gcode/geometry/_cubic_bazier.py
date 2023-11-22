@@ -7,17 +7,18 @@ class CubicBazier(Curve):
 
     __slots__ = 'control1', 'control2', 'stroke_width', 'style'
 
-    def __init__(self, start: Vector, end: Vector, control1: Vector, control2: Vector, stroke_width="0", style=""):
+    def __init__(self, start: Vector, end: Vector, control1: Vector, control2: Vector, stroke_width="0", stroke="", style=""):
 
         self.start = start
         self.end = end
         self.control1 = control1
         self.control2 = control2
         self.stroke_width = stroke_width
+        self.stroke = stroke
         self.style = style
 
     def __repr__(self):
-        return f"CubicBazier(start: {self.start}, end: {self.end}, control1: {self.control1}, control2: {self.control2}, stroke_width: {self.stroke_width}, style: {self.style})"
+        return f"CubicBazier(start: {self.start}, end: {self.end}, control1: {self.control1}, control2: {self.control2}, stroke_width: {self.stroke_width}, stroke: {self.stroke}, style: {self.style})"
 
     def point(self, t):
         return (1-t)**3 * self.start +\

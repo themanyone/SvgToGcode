@@ -109,6 +109,8 @@ class Compiler:
         line0 = line_chain.get(0)
         if float(line0.stroke_width) > 0:
             self.laser_power = float(line0.stroke_width)
+        if hasattr(line0, 'style'):
+            self.style = line0.style
         start = line0.start
 
         # Don't dwell and turn off laser if the new start is at the current position

@@ -14,7 +14,7 @@ class Curve:
     :type self.end: Vector
     """
 
-    __slots__ = 'start', 'end', 'stroke_width', 'style'
+    __slots__ = 'start', 'end', 'stroke_width', 'stroke', 'style'
 
     def point(self, t: float) -> Vector:
         """

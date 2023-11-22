@@ -18,12 +18,13 @@ class Path:
                        'Q': 4, 'q': 4, 'S': 4, 's': 4, 'T': 2, 't': 2, 'A': 7, 'a': 7}
 
     __slots__ = "curves", "initial_point", "current_point", "last_control", "canvas_height", "draw_move", \
-                "transform_origin", "transformation", "stroke_width", "style"
+                "transform_origin", "transformation", "stroke_width", "stroke", "style"
 
-    def __init__(self, d: str, canvas_height: float, transform_origin=True, transformation=None, stroke_width="0", style=""):
+    def __init__(self, d: str, canvas_height: float, transform_origin=True, transformation=None, stroke_width="0", stroke="", style=""):
         self.canvas_height = canvas_height
         self.transform_origin = transform_origin
         self.stroke_width = stroke_width
+        self.stroke = stroke
         self.style = style
         self.curves = []
         self.initial_point = Vector(0, 0)  # type: Vector
@@ -151,111 +152,111 @@ class Path:
             return absolute_move(*(self.current_point + Vector(dx, dy)))
 
         # Draw straight line
-        def absolute_line(x, y, stroke_width=self.stroke_width, style=self.style):
+        def absolute_line(x, y, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             start = self.current_point
             end = Vector(x, y)
 
             line = Line(self.transformation.apply_affine_transformation(start),
-                        self.transformation.apply_affine_transformation(end), stroke_width, style)
+                        self.transformation.apply_affine_transformation(end), stroke_width, stroke, style)
 
             self.current_point = end
 
             return line
 
-        def relative_line(dx, dy, stroke_width=self.stroke_width, style=self.style):
-            return absolute_line(*(self.current_point + Vector(dx, dy)), stroke_width, style)
+        def relative_line(dx, dy, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
+            return absolute_line(*(self.current_point + Vector(dx, dy)), stroke_width, stroke, style)
 
-        def absolute_horizontal_line(x, stroke_width=self.stroke_width):
-            return absolute_line(x, self.current_point.y, stroke_width)
+        def absolute_horizontal_line(x, stroke_width=self.stroke_width, stroke=self.stroke):
+            return absolute_line(x, self.current_point.y, stroke_width, stroke)
 
-        def relative_horizontal_line(dx, stroke_width=self.stroke_width, style=self.style):
-            return absolute_horizontal_line(self.current_point.x + dx, stroke_width, style)
+        def relative_horizontal_line(dx, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
+            return absolute_horizontal_line(self.current_point.x + dx, stroke_width, stroke, style)
 
-        def absolute_vertical_line(y, stroke_width=self.stroke_width, style=self.style):
-            return absolute_line(self.current_point.x, y, stroke_width, style)
+        def absolute_vertical_line(y, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
+            return absolute_line(self.current_point.x, y, stroke_width, stroke, style)
 
-        def relative_vertical_line(dy, stroke_width=self.stroke_width, style=self.style):
-            return absolute_vertical_line(self.current_point.y + dy, stroke_width, style)
+        def relative_vertical_line(dy, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
+            return absolute_vertical_line(self.current_point.y + dy, stroke_width, stroke, style)
 
-        def close_path(stroke_width=self.stroke_width, style=self.style):
-            return absolute_line(*self.initial_point, stroke_width, style)
+        def close_path(stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
+            return absolute_line(*self.initial_point, stroke_width, stroke, style)
 
         # Draw curvy curves
-        def absolute_cubic_bazier(control1_x, control1_y, control2_x, control2_y, x, y, stroke_width=self.stroke_width, style=self.style):
+        def absolute_cubic_bazier(control1_x, control1_y, control2_x, control2_y, x, y, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
 
             trans_start = self.transformation.apply_affine_transformation(self.current_point)
             trans_end = self.transformation.apply_affine_transformation(Vector(x, y))
             trans_control1 = self.transformation.apply_affine_transformation(Vector(control1_x, control1_y))
             trans_control2 = self.transformation.apply_affine_transformation(Vector(control2_x, control2_y))
 
-            cubic_bezier = CubicBazier(trans_start, trans_end, trans_control1, trans_control2, stroke_width, style)
+            cubic_bezier = CubicBazier(trans_start, trans_end, trans_control1, trans_control2, stroke_width, stroke, style)
 
             self.last_control = Vector(control2_x, control2_y)
             self.current_point = Vector(x, y)
 
             return cubic_bezier
 
-        def relative_cubic_bazier(dx1, dy1, dx2, dy2, dx, dy, stroke_width=self.stroke_width, style=self.style):
+        def relative_cubic_bazier(dx1, dy1, dx2, dy2, dx, dy, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             return absolute_cubic_bazier(self.current_point.x + dx1, self.current_point.y + dy1,
                                          self.current_point.x + dx2, self.current_point.y + dy2,
-                                         self.current_point.x + dx, self.current_point.y + dy, stroke_width, style)
+                                         self.current_point.x + dx, self.current_point.y + dy, stroke_width, stroke, style)
 
-        def absolute_cubic_bezier_extension(x2, y2, x, y, stroke_width=self.stroke_width, style=self.style):
+        def absolute_cubic_bezier_extension(x2, y2, x, y, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             start = self.current_point
             control2 = Vector(x2, y2)
             end = Vector(x, y)
 
             if self.last_control:
                 control1 = 2 * start - self.last_control
-                bazier = absolute_cubic_bazier(*control1, *control2, *end, stroke_width, style)
+                bazier = absolute_cubic_bazier(*control1, *control2, *end, stroke_width, stroke, style)
             else:
-                bazier = absolute_quadratic_bazier(*control2, *end, stroke_width, style)
+                bazier = absolute_quadratic_bazier(*control2, *end, stroke_width, stroke, style)
 
             self.current_point = start
 
             return bazier
 
-        def relative_cubic_bazier_extension(dx2, dy2, dx, dy, stroke_width=self.stroke_width, style=self.style):
+        def relative_cubic_bazier_extension(dx2, dy2, dx, dy, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             return absolute_cubic_bezier_extension(self.current_point.x + dx2, self.current_point.y + dy2,
-                                                   self.current_point.x + dx, self.current_point.y + dy, stroke_width, style)
+                                                   self.current_point.x + dx, self.current_point.y + dy, stroke_width, stroke, style)
 
-        def absolute_quadratic_bazier(control1_x, control1_y, x, y, stroke_width=self.stroke_width, style=self.style):
+        def absolute_quadratic_bazier(control1_x, control1_y, x, y, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
 
             trans_end = self.transformation.apply_affine_transformation(self.current_point)
             trans_new_end = self.transformation.apply_affine_transformation(Vector(x, y))
             trans_control1 = self.transformation.apply_affine_transformation(Vector(control1_x, control1_y))
 
-            quadratic_bezier = QuadraticBezier(trans_end, trans_new_end, trans_control1, stroke_width, style)
+            quadratic_bezier = QuadraticBezier(trans_end, trans_new_end, trans_control1, stroke_width, stroke, style)
 
             self.last_control = Vector(control1_x, control1_y)
             self.current_point = Vector(x, y)
 
             return quadratic_bezier
 
-        def relative_quadratic_bazier(dx1, dy1, dx, dy, stroke_width=self.stroke_width, style=self.style):
+        def relative_quadratic_bazier(dx1, dy1, dx, dy, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             return absolute_quadratic_bazier(self.current_point.x + dx1, self.current_point.y + dy1,
-                                             self.current_point.x + dx, self.current_point.y + dy, stroke_width, style)
+                                             self.current_point.x + dx, self.current_point.y + dy, stroke_width, stroke, style)
 
-        def absolute_quadratic_bazier_extension(x, y, stroke_width=self.stroke_width, style=self.style):
+        def absolute_quadratic_bazier_extension(x, y, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             start = self.current_point
             end = Vector(x, y)
 
             if self.last_control:
                 control = 2 * start - self.last_control
-                bazier = absolute_quadratic_bazier(*control, *end, stroke_width, style)
+                bazier = absolute_quadratic_bazier(*control, *end, stroke_width, stroke, style)
             else:
-                bazier = absolute_quadratic_bazier(*start, *end, stroke_width, style)
+                bazier = absolute_quadratic_bazier(*start, *end, stroke_width, stroke, style)
 
             self.current_point = end
             return bazier
 
-        def relative_quadratic_bazier_extension(dx, dy, stroke_width=self.stroke_width):
-            return absolute_quadratic_bazier_extension(self.current_point.x + dx, self.current_point.y + dy, stroke_width, style)
+        def relative_quadratic_bazier_extension(dx, dy, stroke_width=self.stroke_width, stroke=self.stroke):
+            return absolute_quadratic_bazier_extension(self.current_point.x + dx, self.current_point.y + dy, stroke_width, stroke, style)
 
         # Generate EllipticalArc with center notation from svg endpoint notation.
         # Based on w3.org implementation notes. https://www.w3.org/TR/SVG2/implnote.html
         # Todo transformations aren't applied correctly to elliptical arcs
-        def absolute_arc(rx, ry, deg_from_horizontal, large_arc_flag, sweep_flag, x, y, stroke_width=self.stroke_width, style=self.style):
+        def absolute_arc(rx, ry, deg_from_horizontal, large_arc_flag, sweep_flag, x, y, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             end = Vector(x, y)
             start = self.current_point
 
@@ -269,13 +270,13 @@ class Path:
             radii, center, start_angle, sweep_angle = formulas.endpoint_to_center_parameterization(
                 start, end, radii, rotation_rad, large_arc_flag, sweep_flag)
 
-            arc = EllipticalArc(center, radii, rotation_rad, start_angle, sweep_angle, transformation=self.transformation, stroke_width=stroke_width, style=style)
+            arc = EllipticalArc(center, radii, rotation_rad, start_angle, sweep_angle, transformation=self.transformation, stroke_width=stroke_width, stroke=stroke, style=style)
 
             self.current_point = end
             return arc
 
-        def relative_arc(rx, ry, deg_from_horizontal, large_arc_flag, sweep_flag, dx, dy, stroke_width=self.stroke_width, style=self.style):
-            return absolute_arc(rx, ry, deg_from_horizontal, large_arc_flag, sweep_flag, self.current_point.x + dx, self.current_point.y + dy, stroke_width, style)
+        def relative_arc(rx, ry, deg_from_horizontal, large_arc_flag, sweep_flag, dx, dy, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
+            return absolute_arc(rx, ry, deg_from_horizontal, large_arc_flag, sweep_flag, self.current_point.x + dx, self.current_point.y + dy, stroke_width, stroke, style)
 
         command_methods = {
             # Only move end point

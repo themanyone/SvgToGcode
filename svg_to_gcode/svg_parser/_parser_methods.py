@@ -68,7 +68,7 @@ def parse_root(root: ElementTree.Element, transform_origin=True, canvas_height=N
             else:
                 style_value = ""
             if element.tag == "{%s}path" % NAMESPACES["svg"]:
-                path = Path(element.attrib['d'], canvas_height, transform_origin, transformation, stroke_width=element.attrib['stroke-width'], style=style_value)
+                path = Path(element.attrib['d'], canvas_height, transform_origin, transformation, stroke_width=element.attrib['stroke-width'], stroke=element.attrib['stroke'], style=style_value)
                 curves.extend(path.curves)
 
         # Continue the recursion
