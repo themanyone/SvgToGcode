@@ -3,7 +3,17 @@
 Don't feel like coding? Use the [Inkscape extension](https://github.com/JTechPhotonics/J-Tech-Photonics-Laser-Tool).
 
 This library's intended purpose is to laser-cut svg images. However, it is structured such that it can be easily 
-expanded to parse other image formats or compile to different numerical control languages. 
+expanded to parse other image formats or compile to different numerical control languages.
+
+--------------
+
+This fork should be 100% compatible with the original for the purposes of the  [Inkscape extension](https://github.com/JTechPhotonics/J-Tech-Photonics-Laser-Tool).
+
+But it has some extra capabilities that can be tested from the command line with the added [testing/svg2gcode.py](testing/svg2gcode.py). This example uses a custom interface to map line width to laser power. Line widths from 0 to 1 mm in the svg are multiplied x 1000 to achieve laser power levels from 0 to 1000.
+
+Todo: Translate line darkness into laser power, and line width into speed.
+
+----------------
 
 * [Installation](#Installation)
 * [Documentation](#Documentation)

@@ -124,7 +124,7 @@ class Compiler:
 
         for line in line_chain:
             if float(line.stroke_width) > 0 and float(line.stroke_width) != laser_power:
-                laser_power = float(line0.stroke_width)
+                laser_power = float(line.stroke_width)
                 code.append(self.interface.set_laser_power(laser_power))
             code.append(self.interface.linear_move(line.end.x, line.end.y))
 
