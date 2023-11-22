@@ -6,7 +6,6 @@ from svg_to_gcode.geometry import Curve, Line
 from svg_to_gcode.geometry import LineSegmentChain
 from svg_to_gcode import UNITS, TOLERANCES
 
-laser_power = 1
 class Compiler:
     """
     The Compiler class handles the process of drawing geometric objects using interface commands and assembling
@@ -31,6 +30,7 @@ class Compiler:
         self.cutting_speed = cutting_speed
         self.pass_depth = abs(pass_depth)
         self.dwell_time = dwell_time
+        self.laser_power = 1
 
         if (unit is not None) and (unit not in UNITS):
             raise ValueError(f"Unknown unit {unit}. Please specify one of the following: {UNITS}")
@@ -105,11 +105,10 @@ class Compiler:
             warnings.warn("Attempted to parse empty LineChain")
             return []
         
-        global laser_power
         code = []
         line0 = line_chain.get(0)
         if float(line0.stroke_width) > 0:
-            laser_power = float(line0.stroke_width)
+            self.laser_power = float(line0.stroke_width)
         start = line0.start
 
         # Don't dwell and turn off laser if the new start is at the current position
@@ -117,15 +116,12 @@ class Compiler:
 
             code = [self.interface.laser_off(), self.interface.set_movement_speed(self.movement_speed),
                     self.interface.linear_move(start.x, start.y), self.interface.set_movement_speed(self.cutting_speed),
-                    self.interface.set_laser_power(laser_power)]
+                    self.interface.set_laser_power(self.laser_power)]
 
             if self.dwell_time > 0:
                 code = [self.interface.dwell(self.dwell_time)] + code
 
         for line in line_chain:
-            if float(line.stroke_width) > 0 and float(line.stroke_width) != laser_power:
-                laser_power = float(line.stroke_width)
-                code.append(self.interface.set_laser_power(laser_power))
             code.append(self.interface.linear_move(line.end.x, line.end.y))
 
         self.body.extend(code)
