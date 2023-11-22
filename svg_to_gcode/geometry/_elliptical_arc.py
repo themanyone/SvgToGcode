@@ -13,7 +13,7 @@ class EllipticalArc(Curve):
     # ToDo apply transformation beforehand (in Path) for consistency with other geometric objects. If you (the reader)
     #  know how to easily apply an affine transformation to an ellipse feel free to make a pull request.
     def __init__(self, center: Vector, radii: Vector, rotation: float, start_angle: float, sweep_angle: float,
-                 transformation: None):
+                 transformation: None, stroke_width = "0"):
 
         # Assign and verify arguments
         self.center = center
@@ -22,6 +22,7 @@ class EllipticalArc(Curve):
         self.start_angle = start_angle
         self.sweep_angle = sweep_angle
         self.transformation = transformation
+        self.stroke_width = stroke_width
 
         # Calculate missing data
         self.end_angle = start_angle + sweep_angle
@@ -32,7 +33,7 @@ class EllipticalArc(Curve):
 
     def __repr__(self):
         return f"EllipticalArc(start: {self.start}, end: {self.end}, center: {self.center}, radii: {self.radii}," \
-               f" rotation: {self.rotation}, start_angle: {self.start_angle}, sweep_angle: {self.sweep_angle})"
+               f" rotation: {self.rotation}, start_angle: {self.start_angle}, sweep_angle: {self.sweep_angle}, stroke_width: {self.stroke_width})"
 
     def point(self, t):
         angle = formulas.linear_map(self.start_angle, self.end_angle, t)

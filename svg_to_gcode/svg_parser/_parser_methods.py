@@ -64,7 +64,7 @@ def parse_root(root: ElementTree.Element, transform_origin=True, canvas_height=N
         # If the current element is opaque and visible, draw it
         if draw_hidden or visible:
             if element.tag == "{%s}path" % NAMESPACES["svg"]:
-                path = Path(element.attrib['d'], canvas_height, transform_origin, transformation)
+                path = Path(element.attrib['d'], canvas_height, transform_origin, transformation, stroke_width=element.attrib['stroke-width'])
                 curves.extend(path.curves)
 
         # Continue the recursion
