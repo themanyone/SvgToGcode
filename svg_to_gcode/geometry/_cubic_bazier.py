@@ -5,18 +5,19 @@ from svg_to_gcode.geometry import Curve
 class CubicBazier(Curve):
     """The CubicBazier class inherits from the abstract Curve class and describes a cubic bazier."""
 
-    __slots__ = 'control1', 'control2'
+    __slots__ = 'control1', 'control2', 'stroke_width', 'style'
 
-    def __init__(self, start: Vector, end: Vector, control1: Vector, control2: Vector, stroke_width="0"):
+    def __init__(self, start: Vector, end: Vector, control1: Vector, control2: Vector, stroke_width="0", style=""):
 
         self.start = start
         self.end = end
         self.control1 = control1
         self.control2 = control2
         self.stroke_width = stroke_width
+        self.style = style
 
     def __repr__(self):
-        return f"CubicBazier(start: {self.start}, end: {self.end}, control1: {self.control1}, control2: {self.control2}, stroke_width: {self.stroke_width})"
+        return f"CubicBazier(start: {self.start}, end: {self.end}, control1: {self.control1}, control2: {self.control2}, stroke_width: {self.stroke_width}, style: {self.style})"
 
     def point(self, t):
         return (1-t)**3 * self.start +\

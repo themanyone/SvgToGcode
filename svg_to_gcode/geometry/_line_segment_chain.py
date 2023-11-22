@@ -26,6 +26,7 @@ class LineSegmentChain(Chain):
             # Join lines
             line2.start = line1.end
             line2.stroke_width = line1.stroke_width
+            line2.style = line1.style
 
         self._curves.append(line2)
 
@@ -68,7 +69,7 @@ class LineSegmentChain(Chain):
                 new_t = 1
 
             line_end = shape.point(new_t)
-            line = Line(line_start, line_end, shape.stroke_width)
+            line = Line(line_start, line_end, shape.stroke_width, shape.style)
 
             distance = Curve.max_distance(shape, line, t_range1=(t, new_t))
 
