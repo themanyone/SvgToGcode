@@ -119,7 +119,11 @@ class Compiler:
             # lighter colors multiply laser cutting speed from 1 to 10
             self.speed_multiplier = from_rgb(line0.stroke)
         if hasattr(line0, 'style'):
-            self.style = line0.style
+            # supersede color with style attribute
+            # some programs like inkscape prefer this
+            stroke = line0.style.rpartition("stroke:")
+            if stroke[2] > "":
+                self.speed_multiplier = from_hex(stroke[2])
         start = line0.start
 
         # Don't dwell and turn off laser if the new start is at the current position
