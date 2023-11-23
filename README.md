@@ -11,7 +11,7 @@ This fork should be 100% compatible with the original for the purposes of the  [
 
 But it has some extra capabilities that can be tested from the command line with the added [testing/svg2gcode.py](testing/svg2gcode.py). This example uses a custom interface to map line width to laser power. Line widths from 0 to 1 mm in the svg are multiplied x 1000 to achieve laser power levels from 0 to 1000.
 
-Todo: Translate line darkness into laser power, and line width into speed.
+Todo: Translate color into speed. It should speed up to 10x faster for lighter colors.
 
 ----------------
 

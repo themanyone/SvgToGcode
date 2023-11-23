@@ -5,6 +5,8 @@ from svg_to_gcode.compiler.interfaces import Interface
 from svg_to_gcode.geometry import Curve, Line
 from svg_to_gcode.geometry import LineSegmentChain
 from svg_to_gcode import UNITS, TOLERANCES
+from svg_to_gcode.compiler._hex2gray import from_hex
+from svg_to_gcode.compiler._hex2gray import from_rgb
 
 class Compiler:
     """
@@ -28,6 +30,7 @@ class Compiler:
         self.interface = interface_class()
         self.movement_speed = movement_speed
         self.cutting_speed = cutting_speed
+        self.speed_multiplier = 1
         self.pass_depth = abs(pass_depth)
         self.dwell_time = dwell_time
         self.laser_power = 1
@@ -108,7 +111,13 @@ class Compiler:
         code = []
         line0 = line_chain.get(0)
         if float(line0.stroke_width) > 0:
+            # thicker lines multiply laser power from 0 to 1mm (max)
             self.laser_power = float(line0.stroke_width)
+            if self.laser_power > 1:
+                self.laser_power = 1
+        if hasattr(line0, 'stroke'):
+            # lighter colors multiply laser cutting speed from 1 to 10
+            self.speed_multiplier = from_rgb(line0.stroke)
         if hasattr(line0, 'style'):
             self.style = line0.style
         start = line0.start
@@ -117,7 +126,7 @@ class Compiler:
         if self.interface.position is None or abs(self.interface.position - start) > TOLERANCES["operation"]:
 
             code = [self.interface.laser_off(), self.interface.set_movement_speed(self.movement_speed),
-                    self.interface.linear_move(start.x, start.y), self.interface.set_movement_speed(self.cutting_speed),
+                    self.interface.linear_move(start.x, start.y), self.interface.set_movement_speed(self.cutting_speed * self.speed_multiplier),
                     self.interface.set_laser_power(self.laser_power)]
 
             if self.dwell_time > 0:
