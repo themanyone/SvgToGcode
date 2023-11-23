@@ -110,21 +110,27 @@ class Compiler:
         
         code = []
         line0 = line_chain.get(0)
+        start = line0.start
+        
+        # Apply speed and power multipliers based on line width and stroke (color).
+        # The user sets maximum power and speed of the laser in the interface.
+        # Thick lines give max power. White lines give max speed.
+        # Thin, white lines give max speed, minimum power, for visual placement.
+        # Thick, black lines give min speed, max power, for cutting plywood.
         if float(line0.stroke_width) > 0:
-            # thicker lines multiply laser power from 0 to 1mm (max)
+            # Thin lines reduce laser power from 0mm (off) to 1mm (max power).
             self.laser_power = float(line0.stroke_width)
+            # Lines over 1mm thick do not further increase power.
             if self.laser_power > 1:
                 self.laser_power = 1
         if hasattr(line0, 'stroke'):
-            # lighter colors multiply laser cutting speed from 1 to 10
-            self.speed_multiplier = from_rgb(line0.stroke)
+            # Reduce cutting speed from black (1/10 speed) to white (max speed).
+            self.speed_multiplier = from_rgb(line0.stroke) * 0.9 + 0.1
         if hasattr(line0, 'style'):
-            # supersede color with style attribute
-            # some programs like inkscape prefer this
-            stroke = line0.style.rpartition("stroke:")
-            if stroke[2] > "":
-                self.speed_multiplier = from_hex(stroke[2])
-        start = line0.start
+            # If style is present, use it instead. Inkscape prefers this.
+            [a, b, stroke] = line0.style.rpartition("stroke:")
+            if len(stroke) > 5:
+                self.speed_multiplier = from_hex(stroke) * 0.9 + 0.1
 
         # Don't dwell and turn off laser if the new start is at the current position
         if self.interface.position is None or abs(self.interface.position - start) > TOLERANCES["operation"]:
