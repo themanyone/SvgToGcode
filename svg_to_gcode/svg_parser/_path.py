@@ -166,8 +166,8 @@ class Path:
         def relative_line(dx, dy, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             return absolute_line(*(self.current_point + Vector(dx, dy)), stroke_width, stroke, style)
 
-        def absolute_horizontal_line(x, stroke_width=self.stroke_width, stroke=self.stroke):
-            return absolute_line(x, self.current_point.y, stroke_width, stroke)
+        def absolute_horizontal_line(x, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
+            return absolute_line(x, self.current_point.y, stroke_width, stroke, style)
 
         def relative_horizontal_line(dx, stroke_width=self.stroke_width, stroke=self.stroke, style=self.style):
             return absolute_horizontal_line(self.current_point.x + dx, stroke_width, stroke, style)
