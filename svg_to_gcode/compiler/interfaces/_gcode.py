@@ -33,8 +33,8 @@ class Gcode(Interface):
             warnings.warn("linear_move command invoked without arguments.")
             return ''
 
-        # Todo, investigate G0 command and replace movement speeds with G1 (normal speed) and G0 (fast move)
-        command = "G1"
+        # Try G0 command for fast moves
+        command = "G0"
 
         if self._current_speed != self._next_speed:
             self._current_speed = self._next_speed
