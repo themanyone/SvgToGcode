@@ -136,7 +136,7 @@ class Compiler:
         if self.interface.position is None or abs(self.interface.position - start) > TOLERANCES["operation"]:
 
             code = [self.interface.laser_off(), self.interface.set_movement_speed(self.movement_speed),
-                    self.interface.linear_move(start.x, start.y), self.interface.set_movement_speed(self.cutting_speed * self.speed_multiplier),
+                    self.interface.linear_move(start.x, start.y, c=0), self.interface.set_movement_speed(self.cutting_speed * self.speed_multiplier),
                     self.interface.set_laser_power(self.laser_power)]
 
             if self.dwell_time > 0:

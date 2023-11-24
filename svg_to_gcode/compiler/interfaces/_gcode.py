@@ -23,7 +23,7 @@ class Gcode(Interface):
         self._next_speed = speed
         return ''
 
-    def linear_move(self, x=None, y=None, z=None):
+    def linear_move(self, x=None, y=None, z=None, c=1):
 
         if self._next_speed is None:
             raise ValueError("Undefined movement speed. Call set_movement_speed before executing movement commands.")
@@ -33,8 +33,8 @@ class Gcode(Interface):
             warnings.warn("linear_move command invoked without arguments.")
             return ''
 
-        # Try G0 command for fast moves
-        command = "G0"
+        # Todo, investigate G0 command and replace movement speeds with G1 (normal speed) and G0 (fast move)
+        command = f"G{c}"
 
         if self._current_speed != self._next_speed:
             self._current_speed = self._next_speed
