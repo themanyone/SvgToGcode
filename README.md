@@ -7,11 +7,14 @@ expanded to parse other image formats or compile to different numerical control 
 
 --------------
 
-This fork should be 100% compatible with the original for the purposes of the  [Inkscape extension](https://github.com/JTechPhotonics/J-Tech-Photonics-Laser-Tool).
+This fork uses line width and color information to adjust the laser power and speed during a job. It should be 100% compatible with the original for the purposes of the  [Inkscape extension](https://github.com/JTechPhotonics/J-Tech-Photonics-Laser-Tool).
 
-But it has some extra capabilities that can be tested from the command line with the added [testing/svg2gcode.py](testing/svg2gcode.py). This example uses a custom interface to map line width to laser power. Line widths from 0 to 1 mm in the svg are multiplied x 1000 to achieve laser power levels from 0 to 1000.
+        # The user sets maximum power and speed in the interface, as usual.
+        # Thick lines give max power. White lines give max speed.
+        # Thin, white lines give max speed, minimum power, for visual placement.
+        # Thick, black lines give min speed, max power, for cutting.
 
-Todo: Translate color into speed. It should speed up to 10x faster for lighter colors.
+Test extra capabilities from the command line with the added [testing/svg2gcode.py](testing/svg2gcode.py).
 
 ----------------
 
