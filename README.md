@@ -9,8 +9,8 @@ expanded to parse other image formats or compile to different numerical control 
 
 This fork uses line width and color information to adjust the laser power and speed during a job. It should be 100% compatible with the original for the purposes of the  [Inkscape extension](https://github.com/JTechPhotonics/J-Tech-Photonics-Laser-Tool).
 
-        # The user sets maximum power and speed in the interface, as usual.
-        # Thick lines give max power. White lines give max speed.
+        # The user sets maximum power and speed in the interface.
+        # Thicker lines increase power. Lighter lines increase speed.
         # Thin, white lines give max speed, minimum power, for visual placement.
         # Thick, black lines give min speed, max power, for cutting.
 
