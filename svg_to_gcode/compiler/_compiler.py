@@ -127,10 +127,13 @@ class Compiler:
             # Reduce cutting speed from black (1/10 speed) to white (max speed).
             self.speed_multiplier = from_rgb(line0.stroke) * 0.9 + 0.1
         if hasattr(line0, 'style'):
-            # If style is present, use it instead. Inkscape prefers this.
-            [a, b, stroke] = line0.style.rpartition("stroke:")
+            # If styles are present, use those instead. Inkscape prefers this.
+            stroke = line0.style.rpartition("stroke:")[2]
             if len(stroke) > 5:
                 self.speed_multiplier = from_hex(stroke) * 0.9 + 0.1
+            width = line0.style.rpartition("stroke-width:")[2].partition(';')[0]
+            if len(width):
+                self.laser_power = float(width)
 
         # Don't dwell and turn off laser if the new start is at the current position
         if self.interface.position is None or abs(self.interface.position - start) > TOLERANCES["operation"]:
