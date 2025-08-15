@@ -111,7 +111,9 @@ class Compiler:
         code = []
         line0 = line_chain.get(0)
         start = line0.start
-        
+        self.speed_multiplier = 1.0
+        opacity = 1.0
+        gray = 0.0
         # Apply speed and power multipliers based on line width and stroke (color).
         # The user sets maximum power and speed of the laser in the interface.
         # Thick lines give max power. White lines give max speed.
@@ -123,17 +125,25 @@ class Compiler:
             # Lines over 1mm thick do not further increase power.
             if self.laser_power > 1:
                 self.laser_power = 1
+        if hasattr(line0, 'opacity'):
+            # Reduce cutting speed from opaque (1/10 speed) to clear (max speed).
+            opacity = line0.opacity
         if hasattr(line0, 'stroke'):
             # Reduce cutting speed from black (1/10 speed) to white (max speed).
-            self.speed_multiplier = from_rgb(line0.stroke) * 0.9 + 0.1
+            gray = from_rgb(line0.stroke)
         if hasattr(line0, 'style'):
             # If styles are present, use those instead. Inkscape prefers this.
-            stroke = line0.style.rpartition("stroke:")[2]
-            if len(stroke) > 5:
-                self.speed_multiplier = from_hex(stroke) * 0.9 + 0.1
-            width = line0.style.rpartition("stroke-width:")[2].partition(';')[0]
-            if len(width):
-                self.laser_power = float(width)
+            if line0.style.rpartition("opacity:")[1]:
+                opacity = float(line0.style.rpartition("opacity:")[2].partition(';')[0])
+            if line0.style.rpartition("stroke:")[1]:
+                gray = from_hex(line0.style.rpartition("stroke:")[2].partition(';')[0])
+#            Gray + opacity = laser speed
+#            self.speed_multiplier = 1 - opacity + 0.1
+#            self.speed_multiplier = gray * 0.997824 + 0.1
+            if line0.style.rpartition("stroke-width:")[1]:
+                width = line0.style.rpartition("stroke-width:")[2].partition(';')[0]
+                self.speed_multiplier = 1 - float(width)
+        self.laser_power = opacity - round(gray * 0.997826086956047, 4)
 
         # Don't dwell and turn off laser if the new start is at the current position
         if self.interface.position is None or abs(self.interface.position - start) > TOLERANCES["operation"]:

@@ -16,7 +16,7 @@ class CustomInterface(interfaces.Gcode):
 
     # Override the laser_off method to just say s0.
     def laser_off(self):
-        return "M4 S0;\n" # turn off the laser
+        return "M4 S0;" # turn off the laser
 
     # Override the set_laser_power method
     def set_laser_power(self, power):
@@ -27,8 +27,10 @@ class CustomInterface(interfaces.Gcode):
         return f"S{linear_map(0, 1000, power)};"  # Turn on the fan + change laser power
 
 # Instantiate a compiler, specifying the custom interface and the speed at which the tool should move.
-gcode_compiler = Compiler(CustomInterface, movement_speed=10000, cutting_speed=5000, pass_depth=5, custom_header=[])
+gcode_compiler = Compiler(CustomInterface, movement_speed=10000, cutting_speed=1000, pass_depth=5, custom_header=["G21;"], custom_footer=["G0 X0 Y0;","S0;\n"])
 
 curves = parse_file(sys.argv[1]) # Parse an svg file into geometric curves
+print(curves)
 gcode_compiler.append_curves(curves)
 gcode_compiler.compile_to_file(sys.argv[1]+".gcode")
+print("\nwrote", sys.argv[1]+".gcode")

@@ -9,10 +9,22 @@ expanded to parse other image formats or compile to different numerical control 
 
 This fork uses line width and color information to adjust laser power and speed during a job. It is backwards-compatible. But please [try our new Inkscape plugin fork](https://github.com/themanyone/J-Tech-Photonics-Laser-Tool/tree/master) to enable these advanced features.
 
-        # Set maximum power and speed in the interface.
-        # Thinner lines decrease power. Darker lines reduce speed.
-        # Thin, white lines give max speed, minimum power, for visual placement.
+        # Set maximum power and speed of the device in the interface.
+        # From there, print is modulated by color and stroke width.
+        # Black power! Black is 100% power!
+            # 80% gray is 80% power.
+            # 60% gray is 60% power.
+            # 20% gray is 20% power.
+        # Thinner is faster!
+            # 1.0mm is 0% cutting speed (don't use)
+            # 0.8mm is 20% cutting speed.
+            # 0.5mm is 50% cutting speed.
+            # 0.1mm is 90% cutting speed.
+        # Thin, light lines give max speed, minimum power, for visual placement.
         # Thick, black lines give min speed, max power, for cutting.
+            # Settings depend on material.
+            # On wood, more power = more soot, which fouls laser.
+            # Try 0.4mm 40% gray for cutting. Need to calibrate!
 
 Also test capabilities from the command line with the added [testing/svg2gcode.py](testing/svg2gcode.py).
 
