@@ -143,7 +143,7 @@ class Compiler:
             if line0.style.rpartition("stroke-width:")[1]:
                 width = line0.style.rpartition("stroke-width:")[2].partition(';')[0]
                 self.speed_multiplier = 1 - float(width)
-        self.laser_power = opacity - round(gray * 0.997826086956047, 4)
+        self.laser_power = opacity - round(gray, 4)
 
         # Don't dwell and turn off laser if the new start is at the current position
         if self.interface.position is None or abs(self.interface.position - start) > TOLERANCES["operation"]:
